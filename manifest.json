@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Google Form Auto-Fill",
+  "version": "1.0",
+  "description": "Automatically fills Google Forms using AI.",
+  "permissions": ["scripting", "activeTab", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": { "16": "icon.png" },
+    "default_popup": "index.html"
+  },
+  "host_permissions": ["*://docs.google.com/forms/*"]
+}
