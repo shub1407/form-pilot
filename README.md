@@ -69,7 +69,7 @@ After the free limit, you need to enter your own **GroqCloud API Key**:
 
 ### Get Your API Key
 
-You can obtain your API key from [GroqCloud](https://groq.com/).
+You can obtain your API key from [GroqCloud](https://console.groq.com/keys).
 
 ---
 
