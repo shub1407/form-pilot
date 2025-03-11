@@ -84,7 +84,7 @@ function main(apiKey) {
 
       if (response.status === 401) {
         errorMessage = "❌ Api Key Not Valid: Please check your API Key."
-        console.log(errorMessage)
+
         return { error: true, message: errorMessage, data: null }
       }
 
@@ -93,7 +93,7 @@ function main(apiKey) {
 
         errorMessage =
           errorData.error?.message || `Unexpected Error: ${response.statusText}`
-        console.log(errorMessage)
+
         return { error: true, message: errorMessage, data: null }
       }
 
@@ -101,8 +101,6 @@ function main(apiKey) {
       let answer = JSON.parse(data?.choices[0]?.message?.content)
       return { error: false, data: answer }
     } catch (error) {
-      console.log(errorMessage)
-
       return { error: true, message: errorMessage, data: null }
     }
   }
@@ -110,7 +108,7 @@ function main(apiKey) {
   async function autoSelector() {
     const questions = extractQuestion()
     let response = await generateAnswerWithAI(questions)
-    console.log("Response hai", response)
+
     if (response.error) {
       //sending to poup to display the error message
       chrome.runtime.sendMessage({
@@ -120,9 +118,8 @@ function main(apiKey) {
       return
     }
     let answers = response.data
-    console.log(answers)
+
     let questionsExtracted = document.querySelectorAll(".M7eMe")
-    // console.log(questionsExtracted)
 
     questionsExtracted.forEach((ques, index) => {
       let ans = answers[index]
@@ -137,22 +134,17 @@ function main(apiKey) {
 
       if (correctOption) {
         correctOption.click()
-      } else {
-        console.log("Answer not found for ", ques)
       }
     })
 
     chrome.runtime.sendMessage({ action: "formFilledSuccess" })
   }
   autoSelector()
-
-  console.log(apiKey)
 }
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log(message)
   if (message.action === "fillForm") {
     const apiKey = message.apiKey
-    console.log("Message reached")
+
     main(apiKey)
   }
 })
