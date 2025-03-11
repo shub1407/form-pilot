@@ -19,7 +19,7 @@ This Chrome extension automates the process of filling out Google Forms using th
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/formpilot.git
+git clone https://github.com/shub1407/form-pilot.git
 cd formpilot
 ```
 
