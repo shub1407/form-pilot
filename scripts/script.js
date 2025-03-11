@@ -4,6 +4,10 @@ document.getElementById("myButton").addEventListener("click", () => {
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message.action === "showSuccessMessage") {
+    const btn = document.getElementById("myButton")
+    const apiKeyLink = document.getElementById("api-key")
+    apiKeyLink.style.display = "none"
+    btn.style.display = "none"
     const msg = document.getElementById("message")
     msg.style.display = "block"
     msg.textContent = "✅ Form Filled Successfully!"
@@ -13,5 +17,14 @@ chrome.runtime.onMessage.addListener((message) => {
     setTimeout(() => {
       window.close()
     }, 3000)
+  }
+
+  if (message.action === "formFillFailed") {
+    const btn = document.getElementById("myButton")
+    btn.style.display = "none"
+    const msg = document.getElementById("message")
+    msg.style.display = "block"
+    msg.textContent = message.message
+    msg.style.color = "red"
   }
 })

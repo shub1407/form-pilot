@@ -3,13 +3,19 @@
   "name": "Google Form Auto-Fill",
   "version": "1.0",
   "description": "Automatically fills Google Forms using AI.",
-  "permissions": ["scripting", "activeTab", "tabs"],
+  "permissions": ["scripting", "activeTab", "tabs", "storage"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "scripts/background.js"
   },
   "action": {
-    "default_icon": { "16": "icon.png" },
-    "default_popup": "index.html"
+    "default_icon": { "16": "assets/icon.png" },
+    "default_popup": "popup/index.html"
   },
+  "content_scripts": [
+    {
+      "matches": ["*://docs.google.com/forms/*"],
+      "js": ["/scripts/content.js"]
+    }
+  ],
   "host_permissions": ["*://docs.google.com/forms/*"]
 }
