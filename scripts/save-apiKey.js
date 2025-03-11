@@ -22,8 +22,9 @@ saveBtn.addEventListener("click", () => {
 })
 
 getBtn.addEventListener("click", async () => {
-  const { apiKey } = await chrome.storage.local.get(["apiKey"])
-  if (apiKey) msg.textContent = "Your api key is " + apiKey
+  const { apiKey, count } = await chrome.storage.local.get(["apiKey", "count"])
+  if (apiKey)
+    msg.textContent = "Your api key is " + apiKey + " & count is " + count
   else msg.textContent = "You don't have any saved API key "
   saveBtn.style.display = "none"
   inputContainer.style.display = "none"

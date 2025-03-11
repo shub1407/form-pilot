@@ -1,8 +1,15 @@
 document.getElementById("myButton").addEventListener("click", () => {
+  const btn = document.getElementById("myButton")
+  const loader = document.getElementById("loader")
+  btn.style.display = "none"
+  loader.style.display = "block"
   chrome.runtime.sendMessage({ action: "executeContentScript" })
 })
 
 chrome.runtime.onMessage.addListener((message) => {
+  const loader = document.getElementById("loader")
+
+  loader.style.display = "none"
   if (message.action === "showSuccessMessage") {
     const btn = document.getElementById("myButton")
     const apiKeyLink = document.getElementById("api-key")
@@ -13,7 +20,6 @@ chrome.runtime.onMessage.addListener((message) => {
     msg.textContent = "✅ Form Filled Successfully!"
     msg.style.color = "green"
 
-    // ✅ Auto-close the popup after 3 seconds (Optional)
     setTimeout(() => {
       window.close()
     }, 3000)
