@@ -24,13 +24,13 @@ saveBtn.addEventListener("click", () => {
 getBtn.addEventListener("click", async () => {
   const { apiKey } = await chrome.storage.local.get(["apiKey"])
   if (apiKey) msg.textContent = "Your api key is " + apiKey
-  else msg.textContent = "You dont have any API key saved"
+  else msg.textContent = "You don't have any saved API key "
   saveBtn.style.display = "none"
   inputContainer.style.display = "none"
   getBtn.style.display = "none"
 
   msg.style.display = "block"
-  msg.style.color = "green"
+  msg.style.color = apiKey ? "green" : "red"
   //location.replace("popup/index.html")
   setTimeout(() => {
     window.close()

@@ -24,6 +24,9 @@ function main(apiKey) {
 
   async function generateAnswerWithAI(questions) {
     let API_KEY = apiKey
+    if (!apiKey) {
+      return { error: true, message: "API key not found!! Save it to use" }
+    }
     let SYSTEM_PROMPT = `
         You are helpful assistance. You are given with an array of questions with options. You have to find the correct option from these given options.
         
@@ -80,7 +83,7 @@ function main(apiKey) {
       )
 
       if (response.status === 401) {
-        errorMessage = "❌ Unauthorized: Please check your API Key."
+        errorMessage = "❌ Api Key Not Valid: Please check your API Key."
         console.log(errorMessage)
         return { error: true, message: errorMessage, data: null }
       }
