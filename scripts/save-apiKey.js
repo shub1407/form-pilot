@@ -45,7 +45,7 @@ function saveAPIKey(apiKey) {
     })
     return
   }
-  chrome.storage.local.set({ apiKey }, () => {
+  chrome.storage.local.set({ apiKey, count: "activated" }, () => {
     console.log("API key saved sucessfully")
     chrome.runtime.sendMessage({ action: "apiKeySaved" })
   })

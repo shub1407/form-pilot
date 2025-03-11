@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     // Get the active tab and send the message to content.js
     let { apiKey, count } = await chrome.storage.local.get(["apiKey", "count"])
 
-    if (count >= 5) {
+    if (count !== "activated" && count >= 10) {
       chrome.runtime.sendMessage({
         action: "formFillFailed",
         message:
@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       if (!tabs[0].url.includes("docs.google.com/forms")) {
         chrome.runtime.sendMessage({
           action: "formFillFailed",
-          message: "Idiot🤬!!This is not a google form!!!",
+          message: "!!This is not a google form!!!",
         })
         return
       }
@@ -42,9 +42,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
   if (message.action === "formFilledSuccess") {
     let { count } = await chrome.storage.local.get(["count"])
-    chrome.storage.local.set({ count: count + 1 }, () => {
-      console.log("Count increased")
-    })
+    if (count !== "activated")
+      chrome.storage.local.set({ count: count + 1 }, () => {
+        console.log("Count increased")
+      })
     chrome.runtime.sendMessage({ action: "showSuccessMessage" })
   }
   if (message.action === "apiKeySaved") {

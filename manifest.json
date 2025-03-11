@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "FormPilot",
   "version": "1.0.0",
-  "description": "Stop wasting time copying questions from Google Forms to ChatGPT and then pasting answers back. With FormPilot, you can automatically fill out your Google Form assignments, quizzes, or surveys in just one click.",
-  "permissions": ["scripting", "activeTab", "tabs", "storage"],
+  "description": "FormPilot helps users generate possible answers for Google Forms using ChatGPT API, reducing manual effort.",
+  "permissions": ["scripting", "activeTab", "storage", "tabs"],
   "background": {
     "service_worker": "scripts/background.js"
   },
@@ -23,6 +23,5 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-
-  "host_permissions": ["*://docs.google.com/forms/*"]
+  "homepage_url": "https://github.com/shub1407/form-pilot"
 }
