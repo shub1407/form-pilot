@@ -11,24 +11,28 @@ function main(apiKey) {
 
       question
         .closest(".geS5n")
-        .querySelectorAll(".aDTYNe")
-        .forEach((option) => {
+        ?.querySelectorAll(".aDTYNe")
+        ?.forEach((option) => {
           obj.options.push(option.innerText)
         })
 
       array.push(obj)
     })
+    const titleOfForm = document.querySelector(".F9yp7e").innerText
+    console.log(array)
 
-    return array
+    return [array, titleOfForm]
   }
 
-  async function generateAnswerWithAI(questions) {
+  async function generateAnswerWithAI(titleOfForm, questions) {
     let API_KEY = apiKey
     if (!apiKey) {
       return { error: true, message: "API key not found!! Save it to use" }
     }
     let SYSTEM_PROMPT = `
-        You are helpful assistance. You are given with an array of questions with options. You have to find the correct option from these given options.
+        You are helpful assistance. You are given with an array of questions with options.
+        These questions are of ${titleOfForm}.So, prepare yoour answer on this basis only. 
+        You have to find the correct option from these given options.
         
         EXAMPLE: 
         [
@@ -51,9 +55,13 @@ function main(apiKey) {
                 ]
             }
         ]
+        --IMPORTANT
         
-        You have to return an array of correct answers like:
-        ["Narendra Modi", "New Delhi"]
+        1.You have to return an array of correct answers like:["Narendra Modi", "New Delhi"]
+        2. If particular option is correct you have to give complete option like "Narendra Modi" not only option number like a
+ 
+        3.Strictly give answer for each question, if question or option is blank just give the blank answer
+        4.if no of questions is n then no of answer in the arraay must be n & in that order only.
   
         Don't give any explanation. Just return plain array of answers.
       `
@@ -61,7 +69,11 @@ function main(apiKey) {
     let questionsString = JSON.stringify(questions)
 
     let errorMessage = null
-
+    let models = [
+      "gemma2-9b-it",
+      "llama-3.3-70b-versatile",
+      "deepseek-r1-distill-llama-70b",
+    ]
     try {
       const response = await fetch(
         "https://api.groq.com/openai/v1/chat/completions",
@@ -72,7 +84,7 @@ function main(apiKey) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
+            model: models[1],
             messages: [
               { role: "system", content: SYSTEM_PROMPT },
               { role: "user", content: questionsString },
@@ -90,9 +102,12 @@ function main(apiKey) {
 
       if (!response.ok) {
         const errorData = response
+        console.log(response)
 
         errorMessage =
-          errorData.error?.message || `Unexpected Error: ${response.statusText}`
+          response.status === 429
+            ? "Too many request, try after some time!!"
+            : `Unexpected Error: ${response.statusText}`
 
         return { error: true, message: errorMessage, data: null }
       }
@@ -106,8 +121,9 @@ function main(apiKey) {
   }
 
   async function autoSelector() {
-    const questions = extractQuestion()
-    let response = await generateAnswerWithAI(questions)
+    const [questions, titleOfForm] = extractQuestion()
+    console.log(titleOfForm)
+    let response = await generateAnswerWithAI(titleOfForm, questions)
 
     if (response.error) {
       //sending to poup to display the error message
@@ -118,28 +134,56 @@ function main(apiKey) {
       return
     }
     let answers = response.data
+    console.log(answers)
 
     let questionsExtracted = document.querySelectorAll(".M7eMe")
 
     questionsExtracted.forEach((ques, index) => {
       let ans = answers[index]
 
-      let allOptions = Array.from(
-        ques.closest(".geS5n").querySelectorAll(".aDTYNe")
-      )
+      if (!ans) {
+        console.error(`Answer at index ${index} is undefined.`)
+        return // Skip this question if no answer is found
+      }
 
-      let correctOption = allOptions.find((option) =>
-        option.innerText.includes(ans)
-      )
+      // Remove parentheses, letters like "(b)", and trailing periods
+      let formattedAns = removeOptionLabel(ans)
+      console.log(formattedAns)
+
+      let node = ques.closest(".geS5n")?.querySelectorAll(".aDTYNe")
+      if (!node) return
+      allOptions = Array.from(node)
+
+      // Normalize options: remove letters like "a)", "b)", etc.
+      let formattedOptions = allOptions.map((option) => ({
+        element: option,
+        text: removeOptionLabel(option.innerText),
+      }))
+
+      let correctOption = formattedOptions.find(
+        (option) =>
+          formattedAns === option.text ||
+          option.text.includes(formattedAns) ||
+          formattedAns.includes(option.text)
+      )?.element
 
       if (correctOption) {
         correctOption.click()
+      } else {
+        console.log("------- ERROR ----------")
+        console.log("Searching for:", formattedAns)
+        console.log("Available options:")
+        formattedOptions.forEach((option) => console.log(option.text))
+        console.log("----------- ERROR END -------------")
       }
     })
 
     chrome.runtime.sendMessage({ action: "formFilledSuccess" })
   }
   autoSelector()
+}
+function removeOptionLabel(text) {
+  return text.replace(/^\(?[a-dA-D]\)?[.)]?\s*/, "").toLowerCase()
 }
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "fillForm") {
